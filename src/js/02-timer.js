@@ -15,39 +15,60 @@ const options = {
   defaultDate: Date.now(),
   minDate: 'today',
   minuteIncrement: 1,
-  onClose(selectedDates) {
-    const remainingTime = convertMs(selectedDates[0].getTime() - Date.now());
-    if (remainingTime.seconds < 0) {
-      Notify.failure('Shoose time in future tense!');
-      startBtn.disabled = true;
-      return;
-    }
-    startBtn.disabled = false;
-  },
 };
 
-function timeInterfaceDrawning({ days, hours, minutes, seconds }) {
-  daysLeft.textContent = days;
-  hoursLeft.textContent = hours;
-  minutesLeft.textContent = minutes;
-  secondsLeft.textContent = seconds;
+const date = flatpickr('#datetime-picker', {
+  ...options,
+  onClose(selectedDates) {
+    handleSelectedDate(selectedDates[0].getTime());
+  },
+  onChange(selectedDates) {
+    handleSelectedDate(selectedDates[0].getTime());
+  },
+});
+
+startBtn.addEventListener('click', onStartBtnClick);
+
+function handleSelectedDate(selectedDate) {
+  clearInterval(countdownInterval);
+
+  const currentTime = Date.now();
+  const remainingTime = selectedDate - currentTime;
+
+  if (remainingTime < 0) {
+    Notify.failure('Please select a time in the future!');
+    startBtn.disabled = true;
+    return;
+  }
+
+  timeInterfaceDrawing(convertMs(remainingTime));
+
+  if (remainingTime <= 0 && remainingTime !== null) {
+    clearInterval(countdownInterval);
+    Notify.success('Success');
+    startBtn.disabled = true;
+  } else {
+    startBtn.disabled = false;
+  }
+}
+
+function timeInterfaceDrawing({ days, hours, minutes, seconds }) {
+  daysLeft.textContent = addZero(days);
+  hoursLeft.textContent = addZero(hours);
+  minutesLeft.textContent = addZero(minutes);
+  secondsLeft.textContent = addZero(seconds);
 }
 
 function convertMs(ms) {
-  // Number of milliseconds per unit of time
   const second = 1000;
   const minute = second * 60;
   const hour = minute * 60;
   const day = hour * 24;
 
-  // Remaining days
-  const days = addZero(Math.floor(ms / day));
-  // Remaining hours
-  const hours = addZero(Math.floor((ms % day) / hour));
-  // Remaining minutes
-  const minutes = addZero(Math.floor(((ms % day) % hour) / minute));
-  // Remaining seconds
-  const seconds = addZero(Math.floor((((ms % day) % hour) % minute) / second));
+  const days = Math.floor(ms / day);
+  const hours = Math.floor((ms % day) / hour);
+  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
 }
@@ -56,25 +77,40 @@ function addZero(value) {
   return String(value).padStart(2, '0');
 }
 
-const date = flatpickr('#datetime-picker', options);
-
-startBtn.addEventListener('click', onStartBtnClick);
-
 function onStartBtnClick() {
+  const selectedDate = date.selectedDates[0].getTime();
+  const currentTime = Date.now();
+  const remainingTime = selectedDate - currentTime;
+
+  if (remainingTime < 0) {
+    Notify.failure('Please select a time in the future!');
+    startBtn.disabled = true;
+    return;
+  }
+
+  updateTimeInterface();
   countdownInterval = setInterval(updateTimeInterface, 1000);
+  startBtn.disabled = true;
 }
 
 function updateTimeInterface() {
   const selectedDate = date.selectedDates[0].getTime();
   const currentTime = Date.now();
+  const remainingTime = selectedDate - currentTime;
 
-  const remainingTime = convertMs(selectedDate - currentTime);
-
-  if (remainingTime.seconds < 0) {
+  if (remainingTime < 0) {
     clearInterval(countdownInterval);
     Notify.failure('Please select a time in the future!');
+    startBtn.disabled = true;
     return;
   }
 
-  timeInterfaceDrawning(remainingTime);
+  if (remainingTime <= 0 && remainingTime !== null) {
+    clearInterval(countdownInterval);
+    Notify.success('Success');
+    startBtn.disabled = true;
+  } else {
+    const remaining = convertMs(remainingTime);
+    timeInterfaceDrawing(remaining);
+  }
 }
