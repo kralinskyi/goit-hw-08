@@ -15,17 +15,15 @@ const options = {
   defaultDate: Date.now(),
   minDate: 'today',
   minuteIncrement: 1,
-};
-
-const date = flatpickr('#datetime-picker', {
-  ...options,
   onClose(selectedDates) {
     handleSelectedDate(selectedDates[0].getTime());
   },
   onChange(selectedDates) {
     handleSelectedDate(selectedDates[0].getTime());
   },
-});
+};
+
+const date = flatpickr('#datetime-picker', options);
 
 startBtn.addEventListener('click', onStartBtnClick);
 
