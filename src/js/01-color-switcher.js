@@ -13,7 +13,8 @@ function onStartBtnClick() {
 }
 
 function onStopBtnClick() {
-  document.body.removeAttribute('style');
+  // in case we need to get back initial background -->
+  // document.body.removeAttribute('style');
   startBtn.removeAttribute('disabled', 'false');
   clearInterval(timerId);
 }
