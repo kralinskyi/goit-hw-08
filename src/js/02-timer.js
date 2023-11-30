@@ -3,10 +3,6 @@ import 'flatpickr/dist/flatpickr.min.css';
 import { Notify } from 'notiflix';
 
 const startBtn = document.querySelector('[data-start]');
-const daysLeft = document.querySelector('[data-days]');
-const hoursLeft = document.querySelector('[data-hours]');
-const minutesLeft = document.querySelector('[data-minutes]');
-const secondsLeft = document.querySelector('[data-seconds]');
 let countdownInterval = null;
 
 const options = {
@@ -51,10 +47,10 @@ function handleSelectedDate(selectedDate) {
 }
 
 function timeInterfaceDrawing({ days, hours, minutes, seconds }) {
-  daysLeft.textContent = addZero(days);
-  hoursLeft.textContent = addZero(hours);
-  minutesLeft.textContent = addZero(minutes);
-  secondsLeft.textContent = addZero(seconds);
+  document.querySelector('[data-days]').textContent = addZero(days);
+  document.querySelector('[data-hours]').textContent = addZero(hours);
+  document.querySelector('[data-minutes]').textContent = addZero(minutes);
+  document.querySelector('[data-seconds]').textContent = addZero(seconds);
 }
 
 function convertMs(ms) {
