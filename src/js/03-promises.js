@@ -43,3 +43,5 @@ function onSuccess({ position, delay }) {
 function onRejected({ position, delay }) {
   Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`);
 }
+
+console.log('HO_HO_HO');
